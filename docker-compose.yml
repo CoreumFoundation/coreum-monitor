@@ -1,0 +1,45 @@
+version: '2.1'
+
+networks:
+  coreum-net:
+    driver: bridge
+
+services:
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+      # - ./prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention=35d'
+      - '--web.enable-lifecycle'
+    ports:
+      - 9090:9090
+    networks:
+      - coreum-net
+    labels:
+      org.label-schema.group: "monitoring"
+    restart: always
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    depends_on:
+      - prometheus
+    volumes:
+      - ./grafana:/etc/grafana
+      - ./grafana_data:/var/lib/grafana
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    env_file:
+      - ./grafana/config.grafana
+    restart: always
+    ports:
+      - 3100:3000
+    networks:
+      - coreum-net
+    labels:
+      org.label-schema.group: "monitoring"

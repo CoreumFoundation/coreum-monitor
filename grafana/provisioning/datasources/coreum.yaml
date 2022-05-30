@@ -1,0 +1,11 @@
+apiVersion: 1
+
+datasources:
+- name: coreum
+  type: prometheus
+  orgId: 1
+  folderUid: "o304kMrnz"
+  url: http://prometheus:9090
+  access: proxy
+  basicAuth: false
+  isDefault: true
